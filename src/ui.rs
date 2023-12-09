@@ -1,35 +1,52 @@
 use ratatui::{
     layout::Alignment,
-    style::{Color, Style},
+    // style::{Color, Style},
     widgets::{Block, BorderType, Borders, Paragraph},
     Frame,
+    prelude::*,
 };
 
 use crate::app::App;
 
 /// Renders the user interface widgets.
 pub fn render(app: &mut App, frame: &mut Frame) {
-    // This is where you add new widgets.
-    // See the following resources:
-    // - https://docs.rs/ratatui/latest/ratatui/widgets/index.html
-    // - https://github.com/ratatui-org/ratatui/tree/master/examples
-    frame.render_widget(
-        Paragraph::new(format!(
-            "This is a tui template.\n\
-                Press `Esc`, `Ctrl-C` or `q` to stop running.\n\
-                Press left and right to increment and decrement the counter respectively.\n\
-                Counter: {}",
-            app.counter
-        ))
-        .block(
-            Block::default()
-                .title("Template")
-                .title_alignment(Alignment::Center)
-                .borders(Borders::ALL)
-                .border_type(BorderType::Rounded),
+    let chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(1)
+        .constraints(
+            [
+                Constraint::Length(3),
+                Constraint::Min(3),
+                // Constraint::Min(0), // Allow empty space
+            ]
+            .as_ref(),
         )
-        .style(Style::default().fg(Color::Cyan).bg(Color::Black))
-        .alignment(Alignment::Center),
-        frame.size(),
+        .split(frame.size());
+    frame.render_widget(
+        Paragraph::new(app.input.as_str())
+            .block(
+                Block::default()
+                    .title("Input")
+                    .title_alignment(Alignment::Left)
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded),
+            ),
+        chunks[0],
+    );
+    frame.render_widget(
+        Paragraph::new(app.output.as_str())
+            .block(
+                Block::default()
+                    .title("Output") // TODO: Come up with a better title
+                    .title_alignment(Alignment::Left)
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded),
+            ),
+            chunks[1],
+    );
+
+    frame.set_cursor(
+        chunks[0].x + app.cursor_position as u16 + 1,
+        chunks[0].y + 1
     )
 }
