@@ -1,4 +1,5 @@
 use std::error;
+use crate::game::Backend;
 
 #[derive(Debug)]
 pub enum InputMode {
@@ -26,6 +27,8 @@ pub struct App {
     pub cursor_position: usize,
     /// history
     pub history: Vec<String>,
+    /// backend
+    pub backend: Backend,
 }
 
 impl Default for App {
@@ -38,6 +41,7 @@ impl Default for App {
             input_mode: InputMode::Editing,
             cursor_position: 0,
             history: Vec::new(),
+            backend: Backend::new(),
         }
     }
 }
@@ -54,18 +58,6 @@ impl App {
     /// Set running to false to quit the application.
     pub fn quit(&mut self) {
         self.running = false;
-    }
-
-    pub fn increment_counter(&mut self) {
-        if let Some(res) = self.counter.checked_add(1) {
-            self.counter = res;
-        }
-    }
-
-    pub fn decrement_counter(&mut self) {
-        if let Some(res) = self.counter.checked_sub(1) {
-            self.counter = res;
-        }
     }
 
     pub fn move_cursor_right(&mut self) {
@@ -95,8 +87,8 @@ impl App {
     }
 
     pub fn submit_command(&mut self) {
-        // self.output = SendCommand(self.input.as_str());
-        self.output = String::from(self.input.as_str());
+        self.output = self.backend.send_command(self.input.as_str());
+        // self.output = String::from(self.input.as_str());
         self.input = String::new();
         self.cursor_position = 0;
     }
