@@ -6,7 +6,11 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
     match key_event.code {
         // Exit application on `ESC`
         KeyCode::Esc => {
-            app.quit();
+            if app.output == "Are you sure you want to quit? (Press ESC again to quit)" {
+                app.quit();
+            } else {
+                app.output = String::from("Are you sure you want to quit? (Press ESC again to quit)");
+            }
         }
         KeyCode::Backspace => {
             if !app.game_ended {
