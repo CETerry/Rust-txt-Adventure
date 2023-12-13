@@ -6,6 +6,7 @@ pub struct Backend {
 	player_location: String,
 	inventory: Vec<String>,
 	item_map: HashMap<String, Vec<String>>,
+	move_to_desc: HashMap<String, String>,
 }
 
 impl Backend{
@@ -22,8 +23,8 @@ impl Backend{
 			(String::from("SouthWoods"), Vec::from([String::from("TheHole"), String::from("Path")])),
 			(String::from("Cabin"), Vec::from([String::from("BeatenPath")])),
 		]);
-        let move_to_desc = HashMap::from([
-            (String::from("Path"), (String::from("You find yourself on a path surrounded by woods to your north and south, to the east the path continues to the cabin, to the west your escape from this wretched place."))),
+		let move_to_desc = HashMap::from([
+			(String::from("Path"), (String::from("You find yourself on a path surrounded by woods to your north and south, to the east the path continues to the cabin, to the west your escape from this wretched place."))),
 			(String::from("Run-downPath"), (String::from("You move along to find a run-down path. To the north you can see the woods make way to a clearing containing a rusty pickup truck, to the south you see a trange clearing with a hole, to the west the path continues, to the east the path continues to the contemptible cabin."))),
 			(String::from("BeatenPath"), (String::from("You are on a beaten shoddy path. To the north you see a rusty pickup truck, to the south you see a large swath of tall grass,to the west the path continues, to the east the vile cabin."))),
 			(String::from("RustyPickup"), (String::from("You approach a pickup too old and worndown for use. to the east the backyard of the detestable cabin, to the west the woods, to the south a rundown path and a beaten path."))),
@@ -46,6 +47,7 @@ impl Backend{
 			player_location: player_location,
 			inventory: Vec::from([String::from("Flashlight"), String::from("Phone"), String::from("Wallet")]),
 			item_map: item_map,
+			move_to_desc: move_to_desc,
 		}
 	}
 
@@ -66,10 +68,7 @@ impl Backend{
 							return String::from("Go where?");
 						}
 						let destination = words[2];
-						if !self.move_to(String::from(destination)) {
-							return String::from("You can't go there.");
-						}
-						return format!("You go to {}.", destination);
+						return self.move_to(destination.to_string());
 					},
 					_ => {
 						return String::from("I don't understand.");
@@ -106,14 +105,14 @@ impl Backend{
 		}
 	}
 
-	fn move_to(&mut self, destination:String) -> bool {
+	fn move_to(&mut self, destination:String) -> String {
 		if !self.locations.contains_key(&self.player_location) {
-			return false;
+			return "You can't go there.".to_string();
 		}
 		let locations = self.locations.get(&self.player_location).unwrap();
 		let lower_destination = destination.to_lowercase();
 		if !locations.iter().any(|loc| loc.to_lowercase() == lower_destination) {
-			return false;
+			return "You can't go there.".to_string();
 		}
 		let new_destination = locations.iter().find(|&loc| loc.to_lowercase() == lower_destination);
 		match new_destination {
@@ -121,10 +120,10 @@ impl Backend{
 				self.player_location = found_destination.to_string();
 			},
 			None => {
-				return false;
+				return "You can't go there.".to_string();
 			}
 		}
-		return true;
+		return self.move_to_desc.get(&self.player_location).unwrap().to_string();
 	}
 
 	fn take(&mut self, item:String) -> bool {
