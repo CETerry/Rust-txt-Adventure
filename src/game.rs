@@ -35,6 +35,7 @@ pub struct Backend {
 	inventory: Vec<String>,
 	item_map: HashMap<String, Vec<String>>,
 	move_to_desc: HashMap<String, String>,
+	snek: bool,
 }
 
 impl Backend{
@@ -76,6 +77,7 @@ impl Backend{
 			inventory: Vec::from([String::from("Flashlight"), String::from("Phone"), String::from("Wallet")]),
 			item_map: item_map,
 			move_to_desc: move_to_desc,
+			snek: true,
 		}
 	}
 
@@ -115,6 +117,9 @@ impl Backend{
 			"take" => {
 				if words.len() < 2 {
 					return Response::ok(String::from("Take what?"));
+				}
+				if self.player_location == String::from("NorthWoods") && words[1] == "charm" && self.snek {
+					return Response::new(String::from("You take the charm and the snek bites you... You die..."), Status::Exit);
 				}
 				if self.take(String::from(words[1])) {
 					return Response::ok(format!("You take the {}.", words[1]));
