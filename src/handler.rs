@@ -23,6 +23,12 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
         KeyCode::Char(c) => {
             app.enter_char(c);
         }
+        KeyCode::Up => {
+            app.move_inventory_up();
+        }
+        KeyCode::Down => {
+            app.move_inventory_down();
+        }
         // Other handlers you could add here.
         _ => {}
     }

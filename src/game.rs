@@ -6,7 +6,6 @@ pub struct Backend {
 	player_location: String,
 	inventory: Vec<String>,
 	item_map: HashMap<String, Vec<String>>,
-
 }
 
 impl Backend{
@@ -33,7 +32,7 @@ impl Backend{
 		Self {
 			locations: locations,
 			player_location: player_location,
-			inventory: Vec::new(),
+			inventory: Vec::from([String::from("Flashlight"), String::from("Phone"), String::from("Wallet")]),
 			item_map: item_map,
 		}
 	}
@@ -42,6 +41,9 @@ impl Backend{
 		let command = command.to_lowercase();
 		let words: Vec<&str> = command.split_whitespace().collect();
 		match words[0] {
+			"long" => {
+				return String::from("You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. ");
+			},
 			"go" => {
 				if words.len() < 2 {
 					return String::from("Go where?");
@@ -156,6 +158,14 @@ impl Backend{
 				return false;
 			}
 		}
+	}
+
+	pub fn get_location(&self) -> &str {
+		return self.player_location.as_str();
+	}
+
+	pub fn get_inventory(&self) -> &Vec<String> {
+		return &self.inventory;
 	}
 
 }
