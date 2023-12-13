@@ -42,7 +42,7 @@ impl Default for App {
             running: true,
             counter: 0,
             input: String::new(),
-            output: String::new(),
+            output: String::from("Welcome to the game!"),
             input_mode: InputMode::Editing,
             cursor_position: 0,
             history: Vec::new(),
@@ -94,11 +94,14 @@ impl App {
     }
 
     pub fn submit_command(&mut self) {
+        if self.input.len() == 0 {
+            return;
+        }
         let response = self.backend.send_command(self.input.as_str());
-		if response.status == crate::game::Status::Exit {
-			self.game_ended = true;
-		}
-		self.output = response.response;
+        if response.status == crate::game::Status::Exit {
+            self.game_ended = true;
+        }
+        self.output = response.response;
         self.input = String::new();
         self.cursor_position = 0;
     }
