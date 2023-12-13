@@ -119,7 +119,13 @@ impl Backend{
 					return Response::ok(String::from("Take what?"));
 				}
 				if self.player_location == String::from("NorthWoods") && words[1] == "charm" && self.snek {
-					return Response::new(String::from("You take the charm and the snek bites you... You die..."), Status::Exit);
+					self.snek = false;
+					if self.inventory.contains(&String::from("Antivenom")) {
+						self.take(String::from(words[1]));
+						self.inventory.remove(self.inventory.iter().position(|i| i.to_lowercase() == "antivenom").unwrap());
+						return Response::ok(String::from("You try to take the charm, but the snek bites you... You feel woozy, but step on the danger noodle, killing it. You quickly consume the antivenom and feel better. You take the charm."));
+					}
+					return Response::new(String::from("You try to take the charm, but the snek bites you... You die..."), Status::Exit);
 				}
 				if self.take(String::from(words[1])) {
 					return Response::ok(format!("You take the {}.", words[1]));
