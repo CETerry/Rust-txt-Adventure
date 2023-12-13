@@ -55,9 +55,6 @@ impl Backend{
 		let command = command.to_lowercase();
 		let words: Vec<&str> = command.split_whitespace().collect();
 		match words[0] {
-			"long" => {
-				return String::from("You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. ");
-			},
 			"go" => {
 				if words.len() < 2 {
 					return String::from("Go where?");
@@ -94,6 +91,9 @@ impl Backend{
 				if words.len() < 2 {
 					return String::from("Drop what?");
 				}
+                if self.drop(String::from(words[1])) && self.player_location == String::from("TheHole"){
+                    return format!("You drop the {} into the hole and never hear it hit the bottom.", words[1])
+                }
 				if self.drop(String::from(words[1])) {
 					return format!("You drop the {}.", words[1]);
 				}
@@ -160,7 +160,9 @@ impl Backend{
 				if !self.item_map.contains_key(&self.player_location) {
 					self.item_map.insert(self.player_location.clone(), Vec::new());
 				}
-				self.item_map.get_mut(&self.player_location).unwrap().push(found_item.to_string());
+				if self.player_location != String::from("TheHole") {
+                    self.item_map.get_mut(&self.player_location).unwrap().push(found_item.to_string());
+                }
 				let index = self.inventory.iter().position(|i| i.to_lowercase() == lower_item).unwrap();
 				self.inventory.remove(index);
 				return true;
