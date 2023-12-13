@@ -122,9 +122,12 @@ impl Backend{
 				if words.len() < 2 {
 					return Response::ok(String::from("Drop what?"));
 				}
-                if self.drop(String::from(words[1])) && self.player_location == String::from("TheHole"){
-                    return format!("You drop the {} into the hole and never hear it hit the bottom.", words[1])
-                }
+				if self.drop(String::from(words[1])) && self.player_location == String::from("TheHole"){
+					if words[1] == "mcguffin" {
+						return Response::new(String::from("You drop the mcguffin into the hole... Win Message..."), Status::Exit);
+					}
+					return Response::ok(format!("You drop the {} into the hole and never hear it hit the bottom.", words[1]));
+				}
 				if self.drop(String::from(words[1])) {
 					return Response::ok(format!("You drop the {}.", words[1]));
 				}
@@ -192,8 +195,8 @@ impl Backend{
 					self.item_map.insert(self.player_location.clone(), Vec::new());
 				}
 				if self.player_location != String::from("TheHole") {
-                    self.item_map.get_mut(&self.player_location).unwrap().push(found_item.to_string());
-                }
+					self.item_map.get_mut(&self.player_location).unwrap().push(found_item.to_string());
+				}
 				let index = self.inventory.iter().position(|i| i.to_lowercase() == lower_item).unwrap();
 				self.inventory.remove(index);
 				return true;
