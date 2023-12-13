@@ -36,6 +36,7 @@ pub struct Backend {
 	inventory: Vec<String>,
 	item_map: HashMap<String, Vec<String>>,
 	move_to_desc: HashMap<String, String>,
+  examine_desc: HashMap<String, String>,
 	snek: bool,
 }
 
@@ -65,6 +66,18 @@ impl Backend{
 			(String::from("South Woods"), (String::from("You enter a dimly lit area of the woods. You are barely able to see a path to the north, and a clearing with a hole to the east."))),
 			(String::from("Cabin"), (String::from("You enter the horrid building with every fiber of your being screaming for you to leave as soon as possible.")))
         ]);
+        let examine_desc = HashMap::from([
+            (String::from("Path"), (String::from("There is nothing more to examine here."))),
+			(String::from("Run-down Path"), (String::from("There is nothing more to examine here."))),
+			(String::from("Beaten Path"), (String::from("The air here feels thick and heavyfrom the cabins malign influence. On the door to the cabin you notice cryptic glyphs etched into the wood as well as talismans made from sticks and small animal bones hanging in front of the door."))),
+			(String::from("Rusty Pickup"), (String::from("Placeholder"))),
+			(String::from("Tall Grass"), (String::from("With how tall the grass is you can't help but think this would make a good hiding place."))),
+			(String::from("The Hole"), (String::from("You get closer to the hole. Peering into it you see nothing but an inky blackness all the way down. Curiosity getting the better of you drop a rock from the surrounding area into it. You stand there waiting and waiting and waiting for you to hear it hit the bottom but it never does."))),
+			(String::from("Backyard"), (String::from("Placeholder."))),
+			(String::from("North Woods"), (String::from("Placeholder."))),
+			(String::from("South Woods"), (String::from("Placeholder"))),
+			(String::from("Cabin"), (String::from("Placeholder.")))
+        ]);
 		let player_location = String::from("Path");
 		let item_map = HashMap::from([
 			(String::from("North Woods"), Vec::from([String::from("Charm")])),
@@ -78,6 +91,7 @@ impl Backend{
 			inventory: Vec::from([String::from("Flashlight"), String::from("Phone"), String::from("Wallet")]),
 			item_map: item_map,
 			move_to_desc: move_to_desc,
+      examine_desc: examine_desc,
 			snek: true,
 		}
 	}
@@ -159,6 +173,14 @@ impl Backend{
 				}
 				return Response::ok(format!("You don't have a {}.", words[1]));
 			},
+            "examine" => {
+                if words.len() > 1 {
+                    return Response::ok(String::from("I don't understand."));
+                }
+                else {
+                    return Response::ok(self.examine().to_string());
+                }
+            }
 			_ => {
 				return Response::ok(String::from("I don't understand."));
 			},
@@ -232,6 +254,27 @@ impl Backend{
 			}
 		}
 	}
+
+    fn examine(&mut self) -> String {
+        if !self.item_map.contains_key(&self.player_location) {
+			self.item_map.insert(self.player_location.clone(), Vec::new());
+		}
+        if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Mcguffin")) && self.player_location == String::from("Cabin"){
+            return String::from("Put that back");
+        }
+        else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Antivenom")) && self.player_location == String::from("Rusty Pickup"){
+            return String::from("Placeholder");
+        }
+        //else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Mcguffin")) && self.player_location == String::from("Backyard"){
+            // Backyard with no items
+        //}
+        else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Charm")) && self.player_location == String::from("North Woods"){
+            return String::from("Placeholder");
+        }
+        else {
+            return self.examine_desc.get(&self.player_location).unwrap().to_string(); 
+        }
+    }
 
 	pub fn get_location(&self) -> &str {
 		return self.player_location.as_str();
