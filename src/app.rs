@@ -1,5 +1,6 @@
 use std::error;
 use crate::game::Backend;
+use ratatui::widgets::ListState;
 
 #[derive(Debug)]
 pub enum InputMode {
@@ -29,6 +30,8 @@ pub struct App {
     pub history: Vec<String>,
     /// backend
     pub backend: Backend,
+    /// Selected Index in Inventory
+    pub inventory_state: ListState,
 }
 
 impl Default for App {
@@ -42,6 +45,7 @@ impl Default for App {
             cursor_position: 0,
             history: Vec::new(),
             backend: Backend::new(),
+            inventory_state: ListState::default(),
         }
     }
 }
@@ -88,9 +92,37 @@ impl App {
 
     pub fn submit_command(&mut self) {
         self.output = self.backend.send_command(self.input.as_str());
-        // self.output = String::from(self.input.as_str());
         self.input = String::new();
         self.cursor_position = 0;
+    }
+
+    pub fn move_inventory_up(&mut self) {
+        if self.backend.get_inventory().len() == 0 {
+            self.inventory_state.select(None);
+            return;
+        }
+        let new_pos = self.inventory_state.selected().unwrap_or(0).saturating_sub(1);
+        self.inventory_state.select(Some(new_pos));
+    }
+
+    pub fn move_inventory_down(&mut self) {
+        if self.backend.get_inventory().len() == 0 {
+            self.inventory_state.select(None);
+            return;
+        }
+        let new_pos = self.inventory_state.selected().unwrap_or(0).saturating_add(1);
+        let new_pos = new_pos.clamp(0, self.backend.get_inventory().len() - 1);
+        self.inventory_state.select(Some(new_pos));
+    }
+
+    pub fn clamp_inventory(&mut self) {
+        if self.backend.get_inventory().len() == 0 {
+            self.inventory_state.select(None);
+            return;
+        }
+        let new_pos = self.inventory_state.selected().unwrap_or(0);
+        let new_pos = new_pos.clamp(0, self.backend.get_inventory().len() - 1);
+        self.inventory_state.select(Some(new_pos));
     }
 
 
