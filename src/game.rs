@@ -229,4 +229,16 @@ impl Backend{
 		return &self.inventory;
 	}
 
+	pub fn get_exits(&self) -> Vec<String> {
+		if !self.locations.contains_key(&self.player_location) {
+			return Vec::new();
+		}
+		let locations = self.locations.get(&self.player_location).unwrap();
+		let mut exits = Vec::new();
+		for location in locations {
+			exits.push(location.to_string());
+		}
+		return exits;
+	}
+
 }
