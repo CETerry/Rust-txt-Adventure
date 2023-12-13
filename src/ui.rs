@@ -47,6 +47,20 @@ pub fn render(app: &mut App, frame: &mut Frame) {
             .wrap(Wrap { trim: true }),
             chunks[0],
     );
+    frame.set_cursor(
+        chunks[1].x + app.cursor_position as u16 + 1,
+        chunks[1].y + 1
+    );
+    let chunks = Layout::default()
+        .direction(Direction::Horizontal)
+        .constraints(
+            [
+                Constraint::Percentage(50),
+                Constraint::Percentage(50),
+            ]
+            .as_ref(),
+        )
+        .split(chunks[2]);
     let inventory = app.backend.get_inventory();
     let items: Vec<ListItem> = inventory.iter().map(|i| ListItem::new(i.as_str())).collect();
     let items = List::new(items)
@@ -59,10 +73,19 @@ pub fn render(app: &mut App, frame: &mut Frame) {
         )
         .highlight_style(Style::default().fg(Color::Yellow))
         .highlight_symbol(">> ");
-    frame.render_stateful_widget(items, chunks[2], &mut app.inventory_state);
+    frame.render_stateful_widget(items, chunks[1], &mut app.inventory_state);
 
-    frame.set_cursor(
-        chunks[1].x + app.cursor_position as u16 + 1,
-        chunks[1].y + 1
-    )
+    let exits = app.backend.get_exits();
+    frame.render_widget(
+        Paragraph::new(exits.join("\n").as_str())
+            .block(
+                Block::default()
+                    .title("Exits")
+                    .title_alignment(Alignment::Left)
+                    .borders(Borders::ALL)
+                    .border_type(BorderType::Rounded),
+            )
+            .wrap(Wrap { trim: true }),
+        chunks[0]
+    );
 }
