@@ -10,6 +10,7 @@ pub enum Status {
 	Success,
 	Failure,
 	Exit,
+	Terminate,
 }
 
 impl Response {
@@ -85,6 +86,12 @@ impl Backend{
 		let command = command.to_lowercase();
 		let words: Vec<&str> = command.split_whitespace().collect();
 		match words[0] {
+			"help" => {
+				return Response::ok(self.help());
+			},
+			"quit" => {
+				return Response::new(String::from("You have ended the game."), Status::Terminate);
+			},
 			"end" => {
 				return Response::new(String::from("You have ended the game."), Status::Exit);
 			}
@@ -239,6 +246,10 @@ impl Backend{
 			exits.push(location.to_string());
 		}
 		return exits;
+	}
+
+	pub fn help(&self) -> String {
+		return String::from("Commands:\n\tgo to <location>\n\tinventory\n\ttake <item>\n\tdrop <item>\n\tquit");
 	}
 
 }
