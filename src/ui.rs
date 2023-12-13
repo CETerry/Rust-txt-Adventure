@@ -15,8 +15,8 @@ pub fn render(app: &mut App, frame: &mut Frame) {
         .margin(1)
         .constraints(
             [
-                Constraint::Length(3),
                 Constraint::Min(3),
+                Constraint::Length(3),
                 // Constraint::Min(0), // Allow empty space
             ]
             .as_ref(),
@@ -31,7 +31,7 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                     .borders(Borders::ALL)
                     .border_type(BorderType::Rounded),
             ),
-        chunks[0],
+        chunks[1],
     );
     frame.render_widget(
         Paragraph::new(app.output.as_str())
@@ -42,11 +42,11 @@ pub fn render(app: &mut App, frame: &mut Frame) {
                     .borders(Borders::ALL)
                     .border_type(BorderType::Rounded),
             ),
-            chunks[1],
+            chunks[0],
     );
 
     frame.set_cursor(
-        chunks[0].x + app.cursor_position as u16 + 1,
-        chunks[0].y + 1
+        chunks[1].x + app.cursor_position as u16 + 1,
+        chunks[1].y + 1
     )
 }
