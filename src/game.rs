@@ -96,6 +96,9 @@ impl Backend{
 							return Response::ok(String::from("Go where?"));
 						}
 						let destination = words[2];
+						if words[2] == "cabin" && !self.inventory.contains(&String::from("Charm")) {
+							return Response::ok(String::from("You feel a strange sensation stopping you from entering the cabin..."));
+						}
 						return Response::ok(self.move_to(destination.to_string()));
 					},
 					_ => {
