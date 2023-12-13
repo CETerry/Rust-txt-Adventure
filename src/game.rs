@@ -11,20 +11,32 @@ pub struct Backend {
 impl Backend{
 	pub fn new() -> Self {
 		let locations = HashMap::from([
-			(String::from("Path1"), Vec::from([String::from("Path2"), String::from("WoodsS"), String::from("WoodsN")])),
-			(String::from("Path2"), Vec::from([String::from("Path1"), String::from("Path3"), String::from("WoodsN"), String::from("RustyPickup"), String::from("TheHole")])),
-			(String::from("Path3"), Vec::from([String::from("Path2"), String::from("Cabin"), String::from("RustyPickup"), String::from("TallGrass")])),
-			(String::from("RustyPickup"), Vec::from([String::from("Path2"), String::from("Path3"), String::from("Backyard"), String::from("WoodsN")])),
-			(String::from("TallGrass"), Vec::from([String::from("Path3"), String::from("TheHole"), String::from("Backyard")])),
-			(String::from("TheHole"), Vec::from([String::from("Path2"), String::from("TallGrass"), String::from("WoodsS")])),
+			(String::from("Path"), Vec::from([String::from("Run-downPath"), String::from("SouthWoods"), String::from("NorthWoods")])),
+			(String::from("Run-downPath"), Vec::from([String::from("Path"), String::from("BeatenPath"), String::from("NorthWoods"), String::from("RustyPickup"), String::from("TheHole")])),
+			(String::from("BeatenPath"), Vec::from([String::from("Run-downPath"), String::from("Cabin"), String::from("RustyPickup"), String::from("TallGrass")])),
+			(String::from("RustyPickup"), Vec::from([String::from("Run-downPath"), String::from("BeatenPath"), String::from("Backyard"), String::from("NorthWoods")])),
+			(String::from("TallGrass"), Vec::from([String::from("BeatenPath"), String::from("TheHole"), String::from("Backyard")])),
+			(String::from("TheHole"), Vec::from([String::from("Run-downPath"), String::from("TallGrass"), String::from("SouthWoods")])),
 			(String::from("Backyard"), Vec::from([String::from("RustyPickup"), String::from("TallGrass")])),
-			(String::from("WoodsN"), Vec::from([String::from("RustyPickup"), String::from("Path2"), String::from("Path1")])),
-			(String::from("WoodsS"), Vec::from([String::from("TheHole"), String::from("Path1")])),
-			(String::from("Cabin"), Vec::from([String::from("Path3")])),
+			(String::from("NorthWoods"), Vec::from([String::from("RustyPickup"), String::from("Run-downPath"), String::from("Path")])),
+			(String::from("SouthWoods"), Vec::from([String::from("TheHole"), String::from("Path")])),
+			(String::from("Cabin"), Vec::from([String::from("BeatenPath")])),
 		]);
-		let player_location = String::from("Path1");
+        let move_to_desc = HashMap::from([
+            (String::from("Path"), (String::from("You find yourself on a path surrounded by woods to your north and south, to the east the path continues to the cabin, to the west your escape from this wretched place."))),
+			(String::from("Run-downPath"), (String::from("You move along to find a run-down path. To the north you can see the woods make way to a clearing containing a rusty pickup truck, to the south you see a trange clearing with a hole, to the west the path continues, to the east the path continues to the contemptible cabin."))),
+			(String::from("BeatenPath"), (String::from("You are on a beaten shoddy path. To the north you see a rusty pickup truck, to the south you see a large swath of tall grass,to the west the path continues, to the east the vile cabin."))),
+			(String::from("RustyPickup"), (String::from("You approach a pickup too old and worndown for use. to the east the backyard of the detestable cabin, to the west the woods, to the south a rundown path and a beaten path."))),
+			(String::from("TallGrass"), (String::from("You move into a patch of tall grass that goes up to your chest. To the north is a beaten path, to the west the grass gives way to a clearing with a hole, to the east the backyard of the repulsive cabin,."))),
+			(String::from("TheHole"), (String::from("You approach a small clearing with the only noteworthy feature being a hole in the ground. To the north is a run-down path, to the east a patch of tall grass, to the west the woods."))),
+			(String::from("Backyard"), (String::from("You slink around the cabin to find a large clearing behind it, To the east there is a clearing with a rusty pickup and an area od tall grass."))),
+			(String::from("NorthWoods"), (String::from("You enter a fairly lit area of the woods. to the south a path and a run-down path, to the east the woods give way to a clearing with a rusty pickup."))),
+			(String::from("SouthWoods"), (String::from("You enter a dimly lit area of the woods. You are barely able to see a path to the north, and a clearing with a hole to the east."))),
+			(String::from("Cabin"), (String::from("You enter the horrid building with every fiber of your being screaming for you to leave as soon as possible.")))
+        ]);
+		let player_location = String::from("Path");
 		let item_map = HashMap::from([
-			(String::from("WoodsN"), Vec::from([String::from("Charm")])),
+			(String::from("NorthWoods"), Vec::from([String::from("Charm")])),
 			(String::from("RustyPickup"), Vec::from([String::from("Antivenom")])),
 			(String::from("Backyard"), Vec::from([String::from("Knife"), String::from("TruckKey"), String::from("Eggs")])),
 			(String::from("Cabin"), Vec::from([String::from("Mcguffin")])),
