@@ -1,5 +1,33 @@
 use std::collections::HashMap;
 
+pub struct Response {
+	pub response: String,
+	pub status: Status,
+}
+
+#[derive(PartialEq)]
+pub enum Status {
+	Success,
+	Failure,
+	Exit,
+}
+
+impl Response {
+	pub fn new(response: String, status: Status) -> Self {
+		Self {
+			response: response,
+			status: status,
+		}
+	}
+	pub fn ok(response: String) -> Self {
+		Self {
+			response: response,
+			status: Status::Success,
+		}
+	}
+
+}
+
 #[derive(Debug)]
 pub struct Backend {
 	locations: HashMap<String, Vec<String>>,
@@ -51,56 +79,56 @@ impl Backend{
 		}
 	}
 
-	pub fn send_command(&mut self, command: &str) -> String {
+	pub fn send_command(&mut self, command: &str) -> Response {
 		let command = command.to_lowercase();
 		let words: Vec<&str> = command.split_whitespace().collect();
 		match words[0] {
-			"long" => {
-				return String::from("You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. You are in a dark forest. You can go north, south, east, or west. ");
-			},
+			"end" => {
+				return Response::new(String::from("You have ended the game."), Status::Exit);
+			}
 			"go" => {
 				if words.len() < 2 {
-					return String::from("Go where?");
+					return Response::ok(String::from("Go where?"));
 				}
 				match words[1]{
 					"to" => {
 						if words.len() < 3 {
-							return String::from("Go where?");
+							return Response::ok(String::from("Go where?"));
 						}
 						let destination = words[2];
-						return self.move_to(destination.to_string());
+						return Response::ok(self.move_to(destination.to_string()));
 					},
 					_ => {
-						return String::from("I don't understand.");
+						return Response::ok(String::from("I don't understand."));
 					},
 				}
 			},
 			"inventory" => {
 				if self.inventory.len() == 0 {
-					return String::from("You have nothing.");
+					return Response::ok(String::from("You have nothing."));
 				}
-				return format!("You have {}.", self.inventory.join(", "));
+				return Response::ok(format!("You have {}.", self.inventory.join(", ")));
 			},
 			"take" => {
 				if words.len() < 2 {
-					return String::from("Take what?");
+					return Response::ok(String::from("Take what?"));
 				}
 				if self.take(String::from(words[1])) {
-					return format!("You take the {}.", words[1]);
+					return Response::ok(format!("You take the {}.", words[1]));
 				}
-				return format!("You don't see a {}.", words[1]);
+				return Response::ok(format!("You don't see a {}.", words[1]));
 			},
 			"drop" => {
 				if words.len() < 2 {
-					return String::from("Drop what?");
+					return Response::ok(String::from("Drop what?"));
 				}
 				if self.drop(String::from(words[1])) {
-					return format!("You drop the {}.", words[1]);
+					return Response::ok(format!("You drop the {}.", words[1]));
 				}
-				return format!("You don't have a {}.", words[1]);
+				return Response::ok(format!("You don't have a {}.", words[1]));
 			},
 			_ => {
-				return String::from("I don't understand.");
+				return Response::ok(String::from("I don't understand."));
 			},
 		}
 	}
