@@ -32,6 +32,8 @@ pub struct App {
     pub backend: Backend,
     /// Selected Index in Inventory
     pub inventory_state: ListState,
+    /// Whether or not the game is ended
+    pub game_ended: bool,
 }
 
 impl Default for App {
@@ -46,6 +48,7 @@ impl Default for App {
             history: Vec::new(),
             backend: Backend::new(),
             inventory_state: ListState::default(),
+            game_ended: false,
         }
     }
 }
@@ -91,7 +94,11 @@ impl App {
     }
 
     pub fn submit_command(&mut self) {
-        self.output = self.backend.send_command(self.input.as_str());
+        let response = self.backend.send_command(self.input.as_str());
+		if response.status == crate::game::Status::Exit {
+			self.game_ended = true;
+		}
+		self.output = response.response;
         self.input = String::new();
         self.cursor_position = 0;
     }

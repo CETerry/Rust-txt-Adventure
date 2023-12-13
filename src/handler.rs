@@ -1,5 +1,5 @@
 use crate::app::{App, AppResult};
-use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
+use crossterm::event::{KeyCode, KeyEvent};
 
 /// Handles the key events and updates the state of [`App`].
 pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
@@ -9,10 +9,14 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
             app.quit();
         }
         KeyCode::Backspace => {
-            app.delete_char();
+            if !app.game_ended {
+                app.delete_char();
+            }
         }
         KeyCode::Enter => {
-            app.submit_command();
+            if !app.game_ended {
+                app.submit_command();
+            }
         }
         KeyCode::Left => {
             app.move_cursor_left();
@@ -21,13 +25,19 @@ pub fn handle_key_events(key_event: KeyEvent, app: &mut App) -> AppResult<()> {
             app.move_cursor_right();
         }
         KeyCode::Char(c) => {
-            app.enter_char(c);
+            if !app.game_ended {
+                app.enter_char(c);
+            }
         }
         KeyCode::Up => {
-            app.move_inventory_up();
+            if !app.game_ended {
+                app.move_inventory_up();
+            }
         }
         KeyCode::Down => {
-            app.move_inventory_down();
+            if !app.game_ended {
+                app.move_inventory_down();
+            }
         }
         // Other handlers you could add here.
         _ => {}
