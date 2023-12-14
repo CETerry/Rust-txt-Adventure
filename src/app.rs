@@ -42,7 +42,7 @@ impl Default for App {
             running: true,
             counter: 0,
             input: String::new(),
-            output: String::from("Welcome to the game!"),
+            output: String::from("You are on a path in the woods leading to a cabin. In that cabin is a book of immense evil that needs to be gotten rid of."),
             input_mode: InputMode::Editing,
             cursor_position: 0,
             history: Vec::new(),

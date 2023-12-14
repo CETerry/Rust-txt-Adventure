@@ -36,7 +36,7 @@ pub struct Backend {
 	inventory: Vec<String>,
 	item_map: HashMap<String, Vec<String>>,
 	move_to_desc: HashMap<String, String>,
-  examine_desc: HashMap<String, String>,
+    examine_desc: HashMap<String, String>,
 	snek: bool,
 }
 
@@ -55,7 +55,7 @@ impl Backend{
 			(String::from("Cabin"), Vec::from([String::from("Beaten Path")])),
 		]);
 		let move_to_desc = HashMap::from([
-			(String::from("Path"), (String::from("You find yourself on a path surrounded by woods to your north and south, to the east the path continues to the cabin, to the west your escape from this wretched place."))),
+			(String::from("Path"), (String::from("You find yourself on a path surrounded by woods to your north and south, to the east the path continues to the cabin."))),
 			(String::from("Rundown Path"), (String::from("You move along to find a run-down path. To the north you can see the woods make way to a clearing containing a rusty pickup truck, to the south you see a trange clearing with a hole, to the west the path continues, to the east the path continues to the contemptible cabin."))),
 			(String::from("Beaten Path"), (String::from("You are on a beaten shoddy path. To the north you see a rusty pickup truck, to the south you see a large swath of tall grass,to the west the path continues, to the east the vile cabin."))),
 			(String::from("Rusty Pickup"), (String::from("You approach a pickup too old and worndown for use. to the east the backyard of the detestable cabin, to the west the woods, to the south a rundown path and a beaten path."))),
@@ -70,20 +70,20 @@ impl Backend{
             (String::from("Path"), (String::from("There is nothing more to examine here."))),
 			(String::from("Run-down Path"), (String::from("There is nothing more to examine here."))),
 			(String::from("Beaten Path"), (String::from("The air here feels thick and heavyfrom the cabins malign influence. On the door to the cabin you notice cryptic glyphs etched into the wood as well as talismans made from sticks and small animal bones hanging in front of the door."))),
-			(String::from("Rusty Pickup"), (String::from("Placeholder"))),
+			(String::from("Rusty Pickup"), (String::from("After investigating the truck you notice that in the glovebox is a vial of antivenom."))),
 			(String::from("Tall Grass"), (String::from("With how tall the grass is you can't help but think this would make a good hiding place."))),
 			(String::from("The Hole"), (String::from("You get closer to the hole. Peering into it you see nothing but an inky blackness all the way down. Curiosity getting the better of you drop a rock from the surrounding area into it. You stand there waiting and waiting and waiting for you to hear it hit the bottom but it never does."))),
-			(String::from("Backyard"), (String::from("Placeholder."))),
-			(String::from("North Woods"), (String::from("Placeholder."))),
-			(String::from("South Woods"), (String::from("Placeholder"))),
-			(String::from("Cabin"), (String::from("Placeholder.")))
+			(String::from("Backyard"), (String::from("Despite how large and spacious the cabin's backyard is there isn't much of note except a single tree with a knife stuck in it."))),
+			(String::from("North Woods"), (String::from("After some exploring you come across a tiny hut. In that hut you see a snake gaurding a single well made charm."))),
+			(String::from("South Woods"), (String::from("With how dark these woods are you think that you could easily get lost here, but then again so could something chasing you."))),
+			(String::from("Cabin"), (String::from("You can feel the very air here is thick with evil influence from the book. You find the book on a desk with its page open inviting anyone to read what's inscribed within, but you know better than to do that.")))
         ]);
 		let player_location = String::from("Path");
 		let item_map = HashMap::from([
 			(String::from("North Woods"), Vec::from([String::from("Charm")])),
 			(String::from("Rusty Pickup"), Vec::from([String::from("Antivenom")])),
-			(String::from("Backyard"), Vec::from([String::from("Knife"), String::from("TruckKey"), String::from("Eggs")])),
-			(String::from("Cabin"), Vec::from([String::from("Mcguffin")])),
+			(String::from("Backyard"), Vec::from([String::from("Knife")])),
+			(String::from("Cabin"), Vec::from([String::from("Book")])),
 		]);
 		Self {
 			locations: locations,
@@ -91,7 +91,7 @@ impl Backend{
 			inventory: Vec::from([String::from("Flashlight"), String::from("Phone"), String::from("Wallet")]),
 			item_map: item_map,
 			move_to_desc: move_to_desc,
-      examine_desc: examine_desc,
+             examine_desc: examine_desc,
 			snek: true,
 		}
 	}
@@ -125,7 +125,7 @@ impl Backend{
 						}
 						destination = destination.trim().to_string();
 						if words[2] == "cabin" && !self.inventory.contains(&String::from("Charm")) {
-							return Response::ok(String::from("You feel a strange sensation stopping you from entering the cabin..."));
+							return Response::ok(String::from("As you approach you feel a wave of malaise hit you, and you seem to be unable to muster the energy to keep moving forward."));
 						}
 						return Response::ok(self.move_to(destination.to_string()));
 					},
@@ -149,9 +149,9 @@ impl Backend{
 					if self.inventory.contains(&String::from("Antivenom")) {
 						self.take(String::from(words[1]));
 						self.inventory.remove(self.inventory.iter().position(|i| i.to_lowercase() == "antivenom").unwrap());
-						return Response::ok(String::from("You try to take the charm, but the snek bites you... You feel woozy, but step on the danger noodle, killing it. You quickly consume the antivenom and feel better. You take the charm."));
+						return Response::ok(String::from("You try to take the charm, but the snake bites you. Fearing the effects you quickly consume the antivenom and feel better. No longer fearing the items dillegent gaurd you take the charm."));
 					}
-					return Response::new(String::from("You try to take the charm, but the snek bites you... You die..."), Status::Exit);
+					return Response::new(String::from("You try to take the charm, but the snake bites. It only hurts for a moment until you feel dizzy, and start seeing the ground come up to greet you before everything goes black. Don't worry though it only hurt for a moment. GAME OVER"), Status::Exit);
 				}
 				if self.take(String::from(words[1])) {
 					return Response::ok(format!("You take the {}.", words[1]));
@@ -163,8 +163,8 @@ impl Backend{
 					return Response::ok(String::from("Drop what?"));
 				}
 				if self.drop(String::from(words[1])) && self.player_location == String::from("The Hole"){
-					if words[1] == "mcguffin" {
-						return Response::new(String::from("You drop the mcguffin into the hole... Win Message..."), Status::Exit);
+					if words[1] == "book" {
+						return Response::new(String::from("You drop the book into the hole. Watching as it gets ever so smaller, and even waiting a few moments after it disappeared. On your way back home you feel a sense of relief knowing the world is free from its toxic influence. Well, free from it for now at least. YOU WIN"), Status::Exit);
 					}
 					return Response::ok(format!("You drop the {} into the hole and never hear it hit the bottom.", words[1]));
 				}
@@ -179,6 +179,14 @@ impl Backend{
                 }
                 else {
                     return Response::ok(self.examine().to_string());
+                }
+            }
+            "hide" => {
+                if words.len() > 1 {
+                    return Response::ok(String::from("I don't understand."));
+                }
+                else {
+                    return Response::ok(self.hide().to_string());
                 }
             }
 			_ => {
@@ -259,23 +267,26 @@ impl Backend{
         if !self.item_map.contains_key(&self.player_location) {
 			self.item_map.insert(self.player_location.clone(), Vec::new());
 		}
-        if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Mcguffin")) && self.player_location == String::from("Cabin"){
-            return String::from("Put that back");
+        if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Book")) && self.player_location == String::from("Cabin"){
+            return String::from("You feel as if the very essence of the world around you screams for you to put the book back.");
         }
         else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Antivenom")) && self.player_location == String::from("Rusty Pickup"){
-            return String::from("Placeholder");
+            return String::from("There is nothing else to examine here.");
         }
-        //else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Mcguffin")) && self.player_location == String::from("Backyard"){
-            // Backyard with no items
-        //}
+        else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Knife")) && self.player_location == String::from("Backyard"){
+            return String::from("There is nothing else to examine here.");
+        }
         else if !self.item_map.get(&self.player_location).unwrap().contains(&String::from("Charm")) && self.player_location == String::from("North Woods"){
-            return String::from("Placeholder");
+            return String::from("There is nothing else to examine here.");
         }
         else {
             return self.examine_desc.get(&self.player_location).unwrap().to_string(); 
         }
     }
 
+    fn hide(&self) -> String {
+        return String::from("You attempt to hide.");
+    }
 	pub fn get_location(&self) -> &str {
 		return self.player_location.as_str();
 	}
@@ -297,7 +308,7 @@ impl Backend{
 	}
 
 	pub fn help(&self) -> String {
-		return String::from("Commands:\n\tgo to <location>\n\tinventory\n\ttake <item>\n\tdrop <item>\n\tquit");
+		return String::from("Commands:\n\tgo to <location>\n\tinventory\n\ttake <item>\n\tdrop <item>\n\t examine\n\t hide\n\tquit");
 	}
 
 }
